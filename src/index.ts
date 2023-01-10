@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express'
 import cors from 'cors'
 import { accounts } from './database'
+import { ACCOUNT_TYPE } from './types'
 
 const app = express()
 
@@ -36,4 +37,25 @@ app.delete("/accounts/:id",(req:Request, res:Response)=>{
     }
 
     res.status(200).send("Item deletado com sucesso!")
+})
+
+app.put("/accounts/:id",(req:Request, res:Response)=>{
+    const id = req.params.id
+
+    const newId = req.body.id as string | undefined
+    const newName = req.body.ownerName as string | undefined
+    const newBalance = req.body.balance as number | undefined
+    const newType = req.body.type as ACCOUNT_TYPE | undefined
+
+    const findAccount = accounts.find((account)=> account.id === id)
+
+    if(findAccount){
+        findAccount.id = newId || findAccount.id
+        findAccount.ownerName = newName || findAccount.ownerName
+        findAccount.balance = isNaN(newBalance) ? findAccount.balance : newBalance
+        findAccount.type = newType || findAccount.type
+
+    }
+
+    res.status(200).send("Atualização realizada com sucesso!")
 })
